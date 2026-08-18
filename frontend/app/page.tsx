@@ -11,8 +11,7 @@ type Scenario = {
   cookingDuration: number;
 };
 
-// These defaults provide a realistic starting point while keeping every
-// condition editable before the simulation is submitted.
+
 const defaultScenario: Scenario = {
   outdoorTemperature: 8,
   occupants: 2,
@@ -23,16 +22,23 @@ const defaultScenario: Scenario = {
 };
 
 export default function Home() {
-  // Keeping the configuration in one object mirrors the request body that will
-  // later be sent to the FastAPI simulation endpoint.
+
   const [scenario, setScenario] = useState<Scenario>(defaultScenario);
 
-  function handleSimulationSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSimulationSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    // This temporary log confirms that the full scenario is captured correctly
-    // before the frontend is connected to the simulation API.
-    console.log("Running simulation with:", scenario);
+    const response = await fetch("http://127.0.0.1:8000/api/simulations", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(scenario),
+    });
+  
+    const result = await response.json();
+  
+    console.log("Simulation response:", result);
   }
 
   return (

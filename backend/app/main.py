@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 
 app = FastAPI(
     title="Smart House Environmental Simulator API",
@@ -15,6 +16,15 @@ app.add_middleware(
 )
 
 
+class SimulationScenario(BaseModel):
+    outdoorTemperature: float
+    occupants: int
+    heatingSetpoint: float
+    ventilationRate: float
+    cookingStart: str
+    cookingDuration: int
+
+
 @app.get("/")
 def root():
     return {
@@ -26,3 +36,11 @@ def root():
 @app.get("/api/health")
 def health_check():
     return {"status": "ok"}
+
+
+@app.post("/api/simulations")
+def create_simulation(scenario: SimulationScenario):
+    return {
+        "message": "Simulation received",
+        "scenario": scenario,
+    }
